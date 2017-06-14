@@ -69,7 +69,7 @@ void setup()
 
 void loop()
 {
-  digitalWrite(4, HIGH); //liga LED VERMELHO
+  
   /*****verifica rele para os leds dianteiros da tomada Vermelho e Verde****/
   if (digitalRead(7) == HIGH) { //se o rele estiver ligado
     digitalWrite(8, HIGH); //liga LED VERDE
@@ -80,7 +80,7 @@ void loop()
 
   if (client) // se tiver cliente conectado
   {
-
+    digitalWrite(4, HIGH); //liga LED VERMELHO
     boolean currentLineIsBlank = true;
     String linha;
     while (client.connected()) // em quanto o cliente estiver conectado
@@ -161,14 +161,12 @@ void loop()
       }
     }
     // tempo pro navegador receber os dados
-    delay(500);
+    delay(400);
 
     // fexa conexão
     client.stop();
+    digitalWrite(4, LOW);
   }
-  delay(100);
-  digitalWrite(4, LOW); //liga LED VERMELHO
-  delay(100);
 }
 
 
@@ -196,9 +194,11 @@ float readCurrent(int PIN) {
   }
   current = map(current / 200, 0, 1023, 0, 5000);
   float corrente =    float(current) / sensitivity;
-  if (corrente <= 0.1) {
+  /*
+  if (corrente <= 0.08) {
     corrente = 0;
   }
+  */
   Serial.print("Corrente: ");
   Serial.println(corrente);
 
