@@ -55,19 +55,17 @@ void loop()
             posicao++;
           }
           String comando = linha.substring(5, posicao - 1);
-          client.flush();
           if (comando != "") {
             int v;
             float c;
+            DHT.read11(A5);
             if (comando == "voltagem" or comando == "corrente" or comando == "potencia") {
               c = readCurrent();
               v = readVoltage();
             }
             if (comando == "umidade") {
-              DHT.read11(A5);
               client.println(int(DHT.humidity));
             } else if (comando == "temperatura") {
-              DHT.read11(A5);
               client.println(int(DHT.temperature));
             } else if (comando == "hello") {
               client.println("OKDSV2ENCPH@NTOM");
@@ -88,10 +86,10 @@ void loop()
                 client.println("off");
               }
             } else {
-              client.println("ERRO 404");
+              //client.println("E404");
             }
           } else {
-            client.println("IoT - By Diovane Soligo");
+            //client.println("IoT By Diovane Soligo");
           }
           break; // fim da transmissão
         }
@@ -102,10 +100,11 @@ void loop()
         }
       }
     }
-    delay(500);
+    delay(480);
     client.stop();
     digitalWrite(4, LOW);
   }
+  client.flush();
 }
 /**************************************/
 //SENSOR TENSAO
