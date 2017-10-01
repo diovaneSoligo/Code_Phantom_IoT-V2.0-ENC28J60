@@ -20,6 +20,12 @@ void setup()
   //digitalWrite(8, LOW);//desliga o led verde, liga se o rele estiver HIGH (ligado)
   pinMode(4, OUTPUT);//define o pino 4 como saida, LED VERMELHO
   digitalWrite(4, LOW);//desliga o led vermelho, ele liga se o rele estiver em LOW (desligado)
+
+  digitalWrite(8, HIGH);
+  digitalWrite(4, HIGH);
+  delay(2000);
+  digitalWrite(8, LOW);
+  digitalWrite(4, LOW);
 }
 /******************************/
 void loop()
