@@ -1,9 +1,9 @@
 #include <UIPEthernet.h>//ENC28J60
 #include <dht.h>//DHT11
 /*******************************/
-byte mac[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05}; //endereço mac
-IPAddress ip(192, 168, 0, 6); //seta o ip fixo
-EthernetServer server(1000); //porta do servidor, pois ele vai ser o server
+byte mac[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05}; //um endereço mac diferente para cada tomada
+IPAddress ip(192, 168, 0, 6); //seta o ip fixo um ip para cada tomada
+EthernetServer server(1000); //porta de acesso a tomada
 /*******************************/
 int VQ;
 dht DHT;
@@ -12,20 +12,16 @@ void setup()
 {
   Ethernet.begin(mac, ip);
   server.begin();
-  Serial.begin(9600);
   VQ = determineVQ(A1); //Quiscent output voltage - the average voltage ACS712 shows with no load (0 A)
   pinMode(7, OUTPUT);//Define o pino 7 do rele como saida
   digitalWrite(7, LOW);//mantem o rele desligado, pois quem vai aciona-lo é o servidor mandando um GET
   pinMode(8, OUTPUT);//define o pino 8 como saida, LED VERDE
-  //digitalWrite(8, LOW);//desliga o led verde, liga se o rele estiver HIGH (ligado)
   pinMode(4, OUTPUT);//define o pino 4 como saida, LED VERMELHO
-  digitalWrite(4, LOW);//desliga o led vermelho, ele liga se o rele estiver em LOW (desligado)
-
   digitalWrite(8, HIGH);
   digitalWrite(4, HIGH);
   delay(2000);
-  digitalWrite(8, LOW);
-  digitalWrite(4, LOW);
+  digitalWrite(8, LOW);//desliga o led verde, liga se o rele estiver HIGH (ligado)
+  digitalWrite(4, LOW);//desliga o led vermelho, ele liga se o rele estiver em LOW (desligado
 }
 /******************************/
 void loop()
@@ -52,14 +48,15 @@ void loop()
           client.println();
           int posicao = 5;
           boolean X = true;
-          while (X == true) {
+          while (X == true) {//pega o comando recebido
             if (linha.substring(posicao, posicao + 1) == " ") {
               X = false;
             }
             posicao++;
           }
           String comando = linha.substring(5, posicao - 1);
-          if (comando != " ") {
+          client.flush();
+          if (comando != "") {
             int v;
             float c;
             if (comando == "voltagem" or comando == "corrente" or comando == "potencia") {
@@ -84,13 +81,17 @@ void loop()
               digitalWrite(7, HIGH);
             } else if (comando == "desligar") {
               digitalWrite(7, LOW);
-            } else if (comando = "status") {
+            } else if (comando == "status") {
               if (digitalRead(7) == HIGH) {
                 client.println("on");
               } else {
                 client.println("off");
               }
+            } else {
+              client.println("ERRO 404");
             }
+          } else {
+            client.println("IoT - By Diovane Soligo");
           }
           break; // fim da transmissão
         }
